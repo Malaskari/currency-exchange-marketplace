@@ -105,6 +105,7 @@ const RequestForm = () => {
     } catch (err) {
       console.error('Failed to submit request:', err);
       alert('Error: ' + err.message);
+      return;
     }
   };
 

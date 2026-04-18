@@ -40,17 +40,12 @@ export const AppProvider = ({ children }) => {
     // Try 'team' table first (legacy)
     const { data: teamData, error: teamError } = await supabase
       .from('team')
-      .select('id, username, email, role, password')
+      .select('id, username, email, role, password_hash')
       .eq('username', username)
       .single();
 
     if (teamData && !teamError) {
-      // Check plain text password first (legacy)
-      if (teamData.password === password) {
-        setUser({ id: teamData.id, username: teamData.username, email: teamData.email, role: teamData.role });
-        return true;
-      }
-      // Check password_hash if exists
+      // Only check password_hash (never plain-text)
       if (teamData.password_hash && teamData.password_hash === password) {
         setUser({ id: teamData.id, username: teamData.username, email: teamData.email, role: teamData.role });
         return true;
@@ -65,7 +60,7 @@ export const AppProvider = ({ children }) => {
       .single();
 
     if (userData && !userError) {
-      // Check plain text (simple check) or hashed
+      // Only accept properly hashed passwords
       if (userData.password_hash === password) {
         setUser({ id: userData.id, username: userData.name, email: userData.email, role: userData.role });
         return true;

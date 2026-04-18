@@ -49,7 +49,7 @@ export const useAllSales = () => {
         .from('sales')
         .select('*')
         .order('created_at', { ascending: false })
-        .limit(500);
+        .limit(5000);
       if (error) throw error;
       return data.map(mapSale);
     },
