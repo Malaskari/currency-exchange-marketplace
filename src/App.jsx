@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AppProvider, useApp } from './context/AppContext';
 import PublicHome from './pages/PublicHome';
@@ -20,10 +20,17 @@ import Accounts from './pages/dashboard/Accounts';
 import Transactions from './pages/dashboard/Transactions';
 
 const ProtectedRoute = ({ children, adminOnly = false }) => {
-  const { user } = useApp();
+  const { user, verifyRole } = useApp();
+  const [verified, setVerified] = useState(false);
+  
+  useEffect(() => {
+    if (user?.id && user.role) {
+      verifyRole(user.id, user.role).then(setVerified);
+    }
+  }, [user?.id, user.role, verifyRole]);
+
   if (!user) return <Navigate to="/admin/login" replace />;
-  // Allow both 'admin' (legacy) and 'super_admin' (new) roles
-  if (adminOnly && user.role !== 'admin' && user.role !== 'super_admin') return <Navigate to="/admin/dashboard" replace />;
+  if (adminOnly && !verified) return <Navigate to="/admin/dashboard" replace />;
   return children;
 };
 

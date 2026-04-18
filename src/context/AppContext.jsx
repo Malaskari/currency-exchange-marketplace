@@ -47,6 +47,12 @@ useEffect(() => {
 
   const logout = useCallback(() => setUser(null), []);
 
+  const verifyRole = useCallback(async (id, expectedRole) => {
+    if (!id) return false;
+    const { data } = await supabase.from('users').select('role').eq('id', id).single();
+    return data?.role === expectedRole;
+  }, []);
+
   const updateCashRate = useCallback((v) => updateSettingMutation.mutate({ key: 'cashRate', value: v }), [updateSettingMutation]);
   const updateBankRate = useCallback((v) => updateSettingMutation.mutate({ key: 'bankRate', value: v }), [updateSettingMutation]);
   const updateCashBuyRate = useCallback((v) => updateSettingMutation.mutate({ key: 'cashBuyRate', value: v }), [updateSettingMutation]);
@@ -114,7 +120,7 @@ useEffect(() => {
       setBankBuyEnabled: updateBankBuyEnabled,
       setFeePercent: updateFeePercent,
       setUsdBuyRate: updateUsdBuyRate,
-      user, login, logout,
+      user, login, logout, verifyRole,
       team, addTeamMember, removeTeamMember,
       clearAllData,
     }}>
