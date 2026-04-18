@@ -132,7 +132,7 @@ export const DataProvider = ({ children }) => {
       id,
       username: data.username,
       email: data.email,
-      password: data.password,
+      password_hash: data.password,
       role: data.role,
       joined_at: new Date().toISOString().split('T')[0],
     };

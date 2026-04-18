@@ -20,12 +20,16 @@ export const AuthProvider = ({ children }) => {
     try {
       const { data, error } = await supabase
         .from('team')
-        .select('id, username, email, role')
+        .select('id, username, email, role, password_hash')
         .eq('username', username)
-        .eq('password', password)
         .single();
 
       if (error || !data) {
+        setLoading(false);
+        return false;
+      }
+
+      if (data.password_hash !== password) {
         setLoading(false);
         return false;
       }
