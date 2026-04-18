@@ -50,7 +50,7 @@ const DashboardOverview = () => {
     { label: 'USD Vendor', value: '$' + (treasurySummary.find(s => s.currency === 'USD' && s.account_type === 'vendor')?.total_balance || 0).toLocaleString(), trend: 'Vendor Account', up: true, icon: <DollarSign size={20} />, cls: 'si-green', onClick: () => navigate('/admin/dashboard/accounts') },
     { label: 'USDT Voucher', value: (treasurySummary.find(s => s.currency === 'USDT' && s.account_type === 'voucher')?.total_balance || 0).toLocaleString() + ' USDT', trend: 'Voucher Holding', up: true, icon: <PieChart size={20} />, cls: 'si-purple', onClick: () => navigate('/admin/dashboard/accounts') },
     { label: 'Pending Requests', value: allRequests.filter(r => r.status === 'pending').length, trend: 'Action Needed', up: false, icon: <Clock size={20} />, cls: 'si-amber', onClick: () => navigate('/admin/dashboard/requests') },
-  ], [treasurySummary, allRequests]);
+  ], [treasurySummary, allRequests, navigate]);
 
   const usdtCards = [
     { label: 'USD Payouts', value: `$${(stats.totalUSD || 0).toLocaleString()}`, trend: 'USD Volume', icon: <DollarSign size={20} />, cls: 'si-green', onClick: () => navigate('/admin/dashboard/reports') },

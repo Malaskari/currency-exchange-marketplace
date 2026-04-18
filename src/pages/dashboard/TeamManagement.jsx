@@ -202,7 +202,6 @@ const { user: currentUser } = useApp();
   }, [users, currentUser, isSuperAdmin]);
 
   const subAdmins = useMemo(() => accessibleUsers.filter(u => u.role === 'sub_admin'), [accessibleUsers]);
-  const operators = useMemo(() => accessibleUsers.filter(u => u.role === 'operator'), [accessibleUsers]);
 
   const filteredUsers = useMemo(() => {
     let result = accessibleUsers;

@@ -261,15 +261,6 @@ const Accounts = () => {
   };
 
   // Capital Operations Handlers
-  const openCapitalOp = (type, acc) => {
-    setShowCapitalOp({ type, account: acc });
-    setCapitalOpAccountId(acc?.id || '');
-    setCapitalOpAmount('');
-    setCapitalOpNotes('');
-    setCapitalOpError('');
-    setCapitalOpSuccess(false);
-  };
-
   const handleCapitalOp = async () => {
     const amount = parseFloat(capitalOpAmount);
     const isAdd = showCapitalOp.type === 'add';

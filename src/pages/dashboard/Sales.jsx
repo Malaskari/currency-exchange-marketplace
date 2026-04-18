@@ -89,7 +89,7 @@ const Sales = () => {
     return { amount, feeAmount, netAmount, rate, receivedAmount };
   }, [form]);
 
-  const stats = useMemo(() => {
+  const _stats = useMemo(() => {
     const totalUSD = sales.reduce((s, r) => s + (r.usdAmount || 0), 0);
     const totalRevenue = sales.reduce((s, r) => s + (r.receivedLYD || 0), 0);
     const totalCost = sales.reduce((s, r) => s + (r.usdAmount || 0) * (r.buyRate || 0), 0);
