@@ -5,14 +5,6 @@ import { v4 as uuidv4 } from 'uuid';
 
 const AppContext = createContext();
 
-const mapTeam = (m) => ({
-  id: m.id,
-  username: m.username,
-  email: m.email,
-  role: m.role,
-  joinedAt: m.joined_at,
-});
-
 export const AppProvider = ({ children }) => {
   const { data: settings = {}, isLoading: settingsLoading } = useSettings();
   const updateSettingMutation = useUpdateSetting();
@@ -22,45 +14,28 @@ export const AppProvider = ({ children }) => {
     try { return JSON.parse(localStorage.getItem('rxUser')); } catch { return null; }
   });
 
-  useEffect(() => {
+useEffect(() => {
     const loadTeam = async () => {
-      const { data } = await supabase.from('team').select('*').order('joined_at', { ascending: true });
-      if (data) setTeam(data.map(mapTeam));
+      const { data } = await supabase.from('users').select('*').order('created_at', { ascending: true });
+      if (data) setTeam(data.map(m => ({ id: m.id, username: m.name, email: m.email, role: m.role, joinedAt: m.created_at })));
     };
     loadTeam();
   }, []);
 
   useEffect(() => {
-    user
-      ? localStorage.setItem('rxUser', JSON.stringify(user))
-      : localStorage.removeItem('rxUser');
+    if (user) {
+      localStorage.setItem('rxUser', JSON.stringify(user));
+    } else localStorage.removeItem('rxUser');
   }, [user]);
 
   const login = useCallback(async (username, password) => {
-    // Try 'team' table first (legacy)
-    const { data: teamData, error: teamError } = await supabase
-      .from('team')
-      .select('id, username, email, role, password_hash')
-      .eq('username', username)
-      .single();
-
-    if (teamData && !teamError) {
-      // Only check password_hash (never plain-text)
-      if (teamData.password_hash && teamData.password_hash === password) {
-        setUser({ id: teamData.id, username: teamData.username, email: teamData.email, role: teamData.role });
-        return true;
-      }
-    }
-
-    // Try 'users' table (new system)
     const { data: userData, error: userError } = await supabase
       .from('users')
       .select('id, name, email, role, password_hash')
-      .eq('email', username) 
+      .eq('email', username)
       .single();
 
     if (userData && !userError) {
-      // Only accept properly hashed passwords
       if (userData.password_hash === password) {
         setUser({ id: userData.id, username: userData.name, email: userData.email, role: userData.role });
         return true;
@@ -87,18 +62,18 @@ export const AppProvider = ({ children }) => {
     const id = 'u' + uuidv4();
     const row = {
       id,
-      username: data.username,
+      name: data.username,
       email: data.email,
-      password: data.password,
+      password_hash: data.password,
       role: data.role,
-      joined_at: new Date().toISOString().split('T')[0],
+      created_at: new Date().toISOString(),
     };
-    const { data: inserted } = await supabase.from('team').insert(row).select().single();
-    if (inserted) setTeam((prev) => [...prev, mapTeam(inserted)]);
+    const { data: inserted } = await supabase.from('users').insert(row).select().single();
+    if (inserted) setTeam((prev) => [...prev, { id: inserted.id, username: inserted.name, email: inserted.email, role: inserted.role }]);
   }, []);
 
   const removeTeamMember = useCallback(async (id) => {
-    await supabase.from('team').delete().eq('id', id);
+    await supabase.from('users').delete().eq('id', id);
     setTeam((prev) => prev.filter((m) => m.id !== id));
   }, []);
 

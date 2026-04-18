@@ -15,13 +15,13 @@ export const AuthProvider = ({ children }) => {
       : localStorage.removeItem('rxUser');
   }, [user]);
 
-  const login = useCallback(async (username, password) => {
+const login = useCallback(async (username, password) => {
     setLoading(true);
     try {
       const { data, error } = await supabase
-        .from('team')
-        .select('id, username, email, role, password_hash')
-        .eq('username', username)
+        .from('users')
+        .select('id, name, email, role, password_hash')
+        .eq('email', username)
         .single();
 
       if (error || !data) {
@@ -33,7 +33,8 @@ export const AuthProvider = ({ children }) => {
         setLoading(false);
         return false;
       }
-      setUser({ id: data.id, username: data.username, email: data.email, role: data.role });
+
+      setUser({ id: data.id, username: data.name, email: data.email, role: data.role });
       setLoading(false);
       return true;
     } catch {

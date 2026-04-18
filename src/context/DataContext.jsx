@@ -40,10 +40,10 @@ const mapSale = (s) => ({
 
 const mapTeam = (m) => ({
   id: m.id,
-  username: m.username,
+  username: m.name,
   email: m.email,
   role: m.role,
-  joinedAt: m.joined_at,
+  joinedAt: m.created_at,
 });
 
 export const DataProvider = ({ children }) => {
@@ -130,20 +130,20 @@ export const DataProvider = ({ children }) => {
     const id = 'u' + Date.now();
     const row = {
       id,
-      username: data.username,
+      name: data.username,
       email: data.email,
       password_hash: data.password,
       role: data.role,
-      joined_at: new Date().toISOString().split('T')[0],
+      created_at: new Date().toISOString(),
     };
 
-    const { data: inserted, error } = await supabase.from('team').insert(row).select().single();
+    const { data: inserted, error } = await supabase.from('users').insert(row).select().single();
     if (error) { console.error(error); return; }
     setTeam((prev) => [...prev, mapTeam(inserted)]);
   };
 
   const removeTeamMember = async (id) => {
-    const { error } = await supabase.from('team').delete().eq('id', id);
+    const { error } = await supabase.from('users').delete().eq('id', id);
     if (!error) setTeam((prev) => prev.filter((m) => m.id !== id));
   };
 
